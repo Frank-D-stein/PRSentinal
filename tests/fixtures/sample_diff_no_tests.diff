@@ -1,0 +1,51 @@
+diff --git a/src/processor.py b/src/processor.py
+new file mode 100644
+index 0000000..785b396
+--- /dev/null
++++ b/src/processor.py
+@@ -0,0 +1,45 @@
++"""Data processor module."""
++from __future__ import annotations
++
++
++class DataProcessor:
++    """Processes incoming data records."""
++
++    def __init__(self, config: dict) -> None:
++        self.config = config
++        self.records: list[dict] = []
++
++    def load(self, data: list[dict]) -> None:
++        """Load records into the processor."""
++        self.records = list(data)
++
++    def filter(self, key: str, value: object) -> list[dict]:
++        """Return records where key matches value."""
++        return [r for r in self.records if r.get(key) == value]
++
++    def transform(self, fn) -> list[dict]:
++        """Apply fn to every record and return results."""
++        return [fn(r) for r in self.records]
++
++    def aggregate(self, key: str) -> dict:
++        """Count occurrences of each unique value for key."""
++        counts: dict = {}
++        for record in self.records:
++            val = record.get(key)
++            counts[val] = counts.get(val, 0) + 1
++        return counts
++
++    def export(self, fmt: str = "json") -> str:
++        """Export records in the requested format."""
++        import json
++        if fmt == "json":
++            return json.dumps(self.records)
++        raise ValueError(f"Unsupported format: {fmt}")
++
++    def clear(self) -> None:
++        """Remove all loaded records."""
++        self.records = []
++
++    def count(self) -> int:
++        """Return the number of loaded records."""
++        return len(self.records)

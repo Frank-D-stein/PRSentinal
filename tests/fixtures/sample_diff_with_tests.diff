@@ -1,0 +1,55 @@
+diff --git a/src/utils.py b/src/utils.py
+index 4693ad3..acdca4f 100644
+--- a/src/utils.py
++++ b/src/utils.py
+@@ -1,2 +1,19 @@
+ def add(a, b):
+     return a + b
++
++
++def subtract(a, b):
++    """Subtract b from a."""
++    return a - b
++
++
++def multiply(a, b):
++    """Multiply a by b."""
++    return a * b
++
++
++def divide(a, b):
++    """Divide a by b, raising ZeroDivisionError if b is zero."""
++    if b == 0:
++        raise ZeroDivisionError("Cannot divide by zero")
++    return a / b
+diff --git a/tests/test_utils.py b/tests/test_utils.py
+index 8c295c9..be63f9c 100644
+--- a/tests/test_utils.py
++++ b/tests/test_utils.py
+@@ -1,5 +1,26 @@
+ from src.utils import add
++from src.utils import subtract, multiply, divide
++import pytest
+ 
+ 
+ def test_add():
+     assert add(1, 2) == 3
++
++
++def test_subtract():
++    assert subtract(5, 3) == 2
++    assert subtract(0, 0) == 0
++
++
++def test_multiply():
++    assert multiply(3, 4) == 12
++    assert multiply(-1, 5) == -5
++
++
++def test_divide():
++    assert divide(10, 2) == 5.0
++
++
++def test_divide_by_zero():
++    with pytest.raises(ZeroDivisionError):
++        divide(1, 0)
