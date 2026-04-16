@@ -1,0 +1,26 @@
+{{ tag }}
+## 🛡️ PR Sentinel Report
+
+**Overall Score: {{ "%.1f"|format(overall_score) }} / 10** {{ "✅" if overall_score >= min_score else "❌" }}
+
+| Dimension | Score | Notes |
+|---|---|---|
+| Description | {{ "%g"|format(scores.description|round(1)) }}/10 | {{ notes.description }} |
+| Diff coherence | {{ "%g"|format(scores.diff_coherence|round(1)) }}/10 | {{ notes.diff_coherence }} |
+| Test coverage | {{ "%g"|format(scores.test_coverage|round(1)) }}/10 | {{ notes.test_coverage }} |
+| Commit messages | {{ "%g"|format(scores.commit_messages|round(1)) }}/10 | {{ notes.commit_messages }} |
+| Change size | {{ "%g"|format(scores.change_size|round(1)) }}/10 | {{ notes.change_size }} |
+| AI slop signals | {{ "%g"|format(scores.ai_slop_signals|round(1)) }}/10 | {{ notes.ai_slop_signals }} |
+| Breaking awareness | {{ "%g"|format(scores.breaking_awareness|round(1)) }}/10 | {{ notes.breaking_awareness }} |
+
+{% if flags %}
+**Flags:**
+{% for flag in flags %}
+- {{ flag }}
+{% endfor %}
+{% endif %}
+{% if not ai_scored %}
+> ℹ️ AI scoring was not performed (no `ANTHROPIC_API_KEY` provided). Description, Diff Coherence, AI Slop Signals, and Breaking Awareness defaulted to **5.0**.
+
+{% endif %}
+*Scored by [PR Sentinel](https://github.com/Frank-D-stein/PRSentinal) v0.1*

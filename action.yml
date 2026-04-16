@@ -1,0 +1,50 @@
+name: 'PR Sentinel'
+description: 'Automatically scores incoming pull requests for quality, flags AI-generated slop, and surfaces a review-readiness rating'
+author: 'PR Sentinel'
+
+inputs:
+  anthropic-api-key:
+    description: 'Anthropic API key for AI-powered scoring pass'
+    required: false
+    default: ''
+  github-token:
+    description: 'GitHub token for API access'
+    required: false
+    default: ${{ github.token }}
+  min-score:
+    description: 'Minimum score threshold (0–10) for a passing status check'
+    required: false
+    default: '6.0'
+  block-on-fail:
+    description: 'Set a failing commit status when score is below the threshold'
+    required: false
+    default: 'false'
+  label-prs:
+    description: 'Apply quality labels to PRs'
+    required: false
+    default: 'true'
+  config-path:
+    description: 'Path to the PR Sentinel configuration file'
+    required: false
+    default: '.github/pr-sentinel.yml'
+
+outputs:
+  score:
+    description: 'Overall PR quality score (0–10)'
+  passed:
+    description: 'Whether the PR passed the minimum score threshold'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+    GITHUB_TOKEN: ${{ inputs.github-token }}
+    MIN_SCORE: ${{ inputs.min-score }}
+    BLOCK_ON_FAIL: ${{ inputs.block-on-fail }}
+    LABEL_PRS: ${{ inputs.label-prs }}
+    CONFIG_PATH: ${{ inputs.config-path }}
+
+branding:
+  icon: 'shield'
+  color: 'blue'
