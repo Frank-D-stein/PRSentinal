@@ -1,17 +1,17 @@
 {{ tag }}
-## 🛡️ PR Sentinel Report
+## PR Sentinel Report
 
-**Overall Score: {{ "%.1f"|format(overall_score) }} / 10** {{ "✅" if overall_score >= min_score else "❌" }}
+**Overall Score: {{ "%.1f"|format(overall_score) }} / 10** {{ "PASS" if overall_score >= min_score else "FAIL" }}
 
 | Dimension | Score | Notes |
 |---|---|---|
-| Description | {{ "%g"|format(scores.description|round(1)) }}/10 | {{ notes.description }} |
-| Diff coherence | {{ "%g"|format(scores.diff_coherence|round(1)) }}/10 | {{ notes.diff_coherence }} |
-| Test coverage | {{ "%g"|format(scores.test_coverage|round(1)) }}/10 | {{ notes.test_coverage }} |
-| Commit messages | {{ "%g"|format(scores.commit_messages|round(1)) }}/10 | {{ notes.commit_messages }} |
-| Change size | {{ "%g"|format(scores.change_size|round(1)) }}/10 | {{ notes.change_size }} |
-| AI slop signals | {{ "%g"|format(scores.ai_slop_signals|round(1)) }}/10 | {{ notes.ai_slop_signals }} |
-| Breaking awareness | {{ "%g"|format(scores.breaking_awareness|round(1)) }}/10 | {{ notes.breaking_awareness }} |
+| Description | {{ "%g"|format(display_scores.description) ~ "/10" if display_scores.description is not none else "N/A" }} | {{ notes.description }} |
+| Diff coherence | {{ "%g"|format(display_scores.diff_coherence) ~ "/10" if display_scores.diff_coherence is not none else "N/A" }} | {{ notes.diff_coherence }} |
+| Test coverage | {{ "%g"|format(display_scores.test_coverage) }}/10 | {{ notes.test_coverage }} |
+| Commit messages | {{ "%g"|format(display_scores.commit_messages) }}/10 | {{ notes.commit_messages }} |
+| Change size | {{ "%g"|format(display_scores.change_size) }}/10 | {{ notes.change_size }} |
+| AI slop signals | {{ "%g"|format(display_scores.ai_slop_signals) ~ "/10" if display_scores.ai_slop_signals is not none else "N/A" }} | {{ notes.ai_slop_signals }} |
+| Breaking awareness | {{ "%g"|format(display_scores.breaking_awareness) ~ "/10" if display_scores.breaking_awareness is not none else "N/A" }} | {{ notes.breaking_awareness }} |
 
 {% if flags %}
 **Flags:**
@@ -20,7 +20,7 @@
 {% endfor %}
 {% endif %}
 {% if not ai_scored %}
-> ℹ️ AI scoring was not performed (no `ANTHROPIC_API_KEY` provided). Description, Diff Coherence, AI Slop Signals, and Breaking Awareness defaulted to **5.0**.
+> AI scoring was not performed. AI-only dimensions were omitted from the overall score.
 
 {% endif %}
 *Scored by [PR Sentinel](https://github.com/Frank-D-stein/PRSentinal) v0.1*

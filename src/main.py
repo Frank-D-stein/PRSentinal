@@ -14,6 +14,7 @@ from .config import load_config
 from .fetcher import fetch_pr_data
 from .heuristics import run_heuristics
 from .labeler import apply_labels, set_commit_status
+from .scoring import WeightedDimension, calculate_overall_score
 
 
 def _build_notes(
@@ -75,10 +76,10 @@ def _build_notes(
     else:
         notes.update(
             {
-                "description": "Not scored (no API key)",
-                "diff_coherence": "Not scored (no API key)",
-                "ai_slop_signals": "Not scored (no API key)",
-                "breaking_awareness": "Not scored (no API key)",
+                "description": "Not scored (AI pass unavailable)",
+                "diff_coherence": "Not scored (AI pass unavailable)",
+                "ai_slop_signals": "Not scored (AI pass unavailable)",
+                "breaking_awareness": "Not scored (AI pass unavailable)",
             }
         )
     return notes
@@ -194,15 +195,41 @@ def main() -> None:
         "breaking_awareness": breaking_score,
     }
 
-    overall_score = round(
-        scores["description"] * w.description
-        + scores["diff_coherence"] * w.diff_coherence
-        + scores["test_coverage"] * w.test_coverage
-        + scores["commit_messages"] * w.commit_messages
-        + scores["change_size"] * w.change_size
-        + scores["ai_slop_signals"] * w.ai_slop_signals
-        + scores["breaking_awareness"] * w.breaking_awareness,
-        2,
+    overall_score = calculate_overall_score(
+        {
+            "description": WeightedDimension(
+                score=scores["description"],
+                weight=w.description,
+                included=ai_scored,
+            ),
+            "diff_coherence": WeightedDimension(
+                score=scores["diff_coherence"],
+                weight=w.diff_coherence,
+                included=ai_scored,
+            ),
+            "test_coverage": WeightedDimension(
+                score=scores["test_coverage"],
+                weight=w.test_coverage,
+            ),
+            "commit_messages": WeightedDimension(
+                score=scores["commit_messages"],
+                weight=w.commit_messages,
+            ),
+            "change_size": WeightedDimension(
+                score=scores["change_size"],
+                weight=w.change_size,
+            ),
+            "ai_slop_signals": WeightedDimension(
+                score=scores["ai_slop_signals"],
+                weight=w.ai_slop_signals,
+                included=ai_scored,
+            ),
+            "breaking_awareness": WeightedDimension(
+                score=scores["breaking_awareness"],
+                weight=w.breaking_awareness,
+                included=ai_scored,
+            ),
+        }
     )
 
     # ── Flags ─────────────────────────────────────────────────────────────────
